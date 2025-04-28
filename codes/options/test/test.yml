@@ -1,0 +1,38 @@
+name: test01
+model: condition
+distortion: sr
+scale: 1
+gpu_ids: [0]
+
+
+
+datasets:
+  test_1:  # the 1st test dataset
+    name: 000_Valid_SingleFrame_FirstStage
+    mode: LQ_condition
+#    dataroot_LQ: 
+    dataroot_LQ: 
+    condition: image
+
+
+#### network structures
+network_G:
+  which_model_G: HDRUNet
+  in_nc: 1
+  out_nc: 1
+  nf: 64 
+  act_type: relu
+
+
+#### path
+path:
+  root: ./
+  # pretrain_model_G: 
+  pretrain_model_G:
+
+#  network_G: 生成器网络的配置。
+#  which_model_G: 使用的生成器模型类型，这里是 HDRUNet。
+#  in_nc: 输入通道数，这里是 3，表示输入是 RGB 图像。
+#  out_nc: 输出通道数，这里是 3，表示输出也是 RGB 图像。
+#  nf: 特征通道数，这里是 64，指网络内部使用的特征图的通道数。
+#  act_type: 激活函数类型，这里是 relu，表示使用 ReLU 激活函数。
