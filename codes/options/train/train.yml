@@ -1,0 +1,108 @@
+#### general settings
+name: HDRUNet_tanh_l1_train006_1225
+model: condition
+use_tb_logger: true
+distortion: sr
+scale: 1
+gpu_ids: [0]
+
+#    name: 模型的名称，用于区分不同的实验或模型配置。
+#    model: 模型类型，这里为 condition，表明是一个条件模型。
+#    use_tb_logger: 是否使用 TensorBoard 日志记录，这里设置为 true。
+#    distortion: 数据集的失真类型，这里为 sr，可能是超级分辨率（super-resolution）。
+#    scale: 缩放比例，这里为 1，意味着没有缩放。
+#    gpu_ids: 使用的 GPU ID 列表，这里为 [0]，只使用第 0 号 GPU。
+
+
+#### datasets
+datasets:
+  train:
+    name: Single_LDR2HDR
+    mode: LQGT_condition
+    dataroot_LQ: E:/tool/HDRUNet-main/data0/000_single_train_1122/cutmedium50_10
+    dataroot_GT: E:/tool/HDRUNet-main/data0/000_single_train_1122/cutgt
+    dataroot_ratio: E:/tool/HDRUNet-main/data0/000_single_train_1122/alignratio
+
+    use_shuffle: true
+    n_workers: 8
+    batch_size: 16
+    GT_size: 160
+    use_flip: true
+    use_rot: true
+    condition: image
+
+
+
+  val:
+    name: Single_LDR2HDR
+    mode: LQGT_condition
+    dataroot_LQ: 
+    dataroot_GT: 
+    dataroot_ratio: 
+
+
+    condition: image
+
+
+
+
+#### network structures
+network_G:
+  which_model_G: HDRUNet
+  in_nc: 1
+  out_nc: 1
+  nf: 64 
+  act_type: relu 
+
+#    这里有修改通道数
+
+#    network_G: 生成器网络的配置。
+#    nf: 特征通道数，这里为 64。
+#    act_type: 激活函数类型，这里为 relu。
+
+
+#### path
+path:
+  root: ./
+  #pretrain_model_G: E:/tool/HDRUNet-main/pretrained_models/1220_50000_G.pth
+  strict_load: false
+  # resume_state: ../experiments/...
+
+
+#    path: 文件路径的配置。
+#    root: 项目根目录。
+#    pretrain_model_G: 预训练模型的路径，这里未设置。
+#    strict_load: 是否严格加载模型，默认为 false。
+#    resume_state: 继续训练的状态路径，这里未设置。
+
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_G: !!float 2e-4
+  lr_scheme: MultiStepLR # MultiStepLR | CosineAnnealingLR_Restart
+  beta1: 0.9
+  beta2: 0.99
+  niter: 1000000 # 100 0000
+  warmup_iter: -1  # no warm up
+
+#  lr_scheme: MultiStepLR
+  lr_steps: [200000, 400000, 600000, 800000]
+  lr_gamma: 0.5
+
+  pixel_criterion: tanh_l1 # l1 | l2 | tanh_l1 | tanh_l2
+  pixel_weight: 1.0
+
+  manual_seed: 10
+  val_freq: !!float 5e3
+
+
+
+#### logger
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
+
+
+#  logger: 日志记录的配置。
+#  print_freq: 打印频率，默认为 100 次迭代。
+#  save_checkpoint_freq: 保存检查点的频率，默认为 5000 次迭代。
